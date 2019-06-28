@@ -8,6 +8,11 @@ import { PromptModalComponent } from './promptModal.component'
 /** @hidden */
 @Component({
     template: require('./sshSettingsTab.component.pug'),
+    host: {
+        '(click)': 'someClick($event)',
+        '(mouseup)': 'someClick($event)',
+        '(mousedown)': 'someClick($event)'
+    }
 })
 export class SSHSettingsTabComponent {
     connections: SSHConnection[]
@@ -24,6 +29,10 @@ export class SSHSettingsTabComponent {
         this.refresh()
     }
 
+    someClick($event) {
+        console.log($event);
+    }
+
     createConnection () {
         const connection: SSHConnection = {
             name: '',
@@ -32,7 +41,9 @@ export class SSHSettingsTabComponent {
             user: 'root',
         }
 
-        const modal = this.ngbModal.open(EditConnectionModalComponent)
+        const modal = this.ngbModal.open(EditConnectionModalComponent, {backdrop: false, size: 'lg'});
+        this.ngbModal
+
         modal.componentInstance.connection = connection
         modal.result.then(result => {
             this.connections.push(result)
@@ -43,14 +54,18 @@ export class SSHSettingsTabComponent {
     }
 
     editConnection (connection: SSHConnection) {
-        const modal = this.ngbModal.open(EditConnectionModalComponent, { size: 'lg' })
+        
+        const modal = this.ngbModal.open(EditConnectionModalComponent, {size: 'lg'});
+
         modal.componentInstance.connection = Object.assign({}, connection)
         modal.result.then(result => {
             Object.assign(connection, result)
             this.config.store.ssh.connections = this.connections
             this.config.save()
             this.refresh()
-        })
+        }).catch(error => {
+            console.log(error);
+        });
     }
 
     async deleteConnection (connection: SSHConnection) {

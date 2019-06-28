@@ -9,7 +9,11 @@ import { ALGORITHMS } from 'ssh2-streams/lib/constants'
 /** @hidden */
 @Component({
     template: require('./editConnectionModal.component.pug'),
+    host: {
+        '(click)': 'someClick($event)'
+    }
 })
+
 export class EditConnectionModalComponent {
     connection: SSHConnection
     hasSavedPassword: boolean
@@ -43,6 +47,9 @@ export class EditConnectionModalComponent {
         }
     }
 
+    someClick($event) {
+        console.log($event);
+    }
     async ngOnInit () {
         this.hasSavedPassword = !!await this.passwordStorage.loadPassword(this.connection)
         this.connection.algorithms = this.connection.algorithms || {}
